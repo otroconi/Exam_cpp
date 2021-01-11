@@ -352,7 +352,21 @@ bst<key_type, value_type, PO>::private_insert(O&& x ){            // i.e bst<key
 template <typename key_type, typename value_type, typename PO> //if we write PO=std::less<key_type> ==> error:default value for x
 void bst<key_type, value_type, PO>::recursive_insertion(std::vector<pair_type>){
 	std::vector<pair_type> pairs;
+	std::size_t size = pairs.size();
 	std::size_t middle = 0.5 * pairs.size(); 
+
+	int i;
+	if(!size%2)
+		i = middle;                                   //Not completed! :(
+	else 
+		i = middle -1;
+
+	std::vector<pair_type> pairs2 = pairs[i]; 
+//	std::vector<pair_type> pairs2_left_o = pairs2.begin();
+//	std::vector<pair_type> pairs2_left_f = pairs2.end();	
+
+	
+	
 }
 
 template <typename key_type, typename value_type, typename PO> //if we write PO=std::less<key_type> ==> error:default value for x
@@ -367,7 +381,7 @@ void bst<key_type, value_type, PO>::balance(){
 	};
 
 	for (iterator it = begin_pair; it != end_pair; ++it){
-		pairs.push_back(begin_pair);   //remember here when he discussed in the vector excersise session that push_back
+		pairs.push_back(*begin_pair);   //remember here when he discussed in the vector excersise session that push_back
 	}                                      //takes only one argument 
 
 	clear();        //Remember it!!

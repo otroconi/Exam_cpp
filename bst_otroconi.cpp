@@ -7,10 +7,11 @@
 #include <cstddef>
 #include <chrono>
 #include <random>
+#include <algorithm> //std::sort()
 
 template <typename T>
 class node_t{
-//	key_type _key;
+//	key_type _key; //remember here the videos with the animal class (when he mention about the snake, dogs (guau-guau))
 	public:
 	T  _value;
 	std::unique_ptr<node_t> left;  //smart pointers
@@ -146,8 +147,8 @@ class bst{
 		const_iterator find(const key_type& x) const noexcept { return private_find(x); };	
 
 		//Insert
-		std::pair<iterator, bool> insert(const pair_type& x) { return private_insert(x); }
-		std::pair<iterator, bool> insert(pair_type&& x) { return private_insert(std::move(x)); }
+		std::pair<iterator, bool> insert(const pair_type& x) { return private_insert(x); } //OJO: here not to write noexcept
+		std::pair<iterator, bool> insert(pair_type&& x) { return private_insert(std::move(x)); } //Ojo: here not to write noexcept 
 
 		//Emplace
 		template <class... Types>
@@ -162,14 +163,13 @@ class bst{
 		//needed because unique_ptr does not support by default the deep copy
 		bst(const bst &x): po_comp{x.po_comp} {
 			if(x.root)
-//				root = root.reset(new node{x.root});  //new call the ctor, since root is a uniq ptr it automatically release the memory
+				root = root.reset(new node{x.root});  //new call the ctor, since root is a uniq ptr it automatically release the memory
 //				root = x.root;
-				root = std::make_unique<node>(x.root);				
 		};
 		
 		bst &operator=(const bst &x) {
 			root.reset();
-			auto tmp = x;  //copy ctor
+			auto tmp{x}; //copy ctor   
 			*this = std::move(x); //move assigment
 			return *this;
 		}
@@ -182,7 +182,11 @@ class bst{
 
 		//clear
 		void clear() noexcept { root.reset(nullptr); }; //reset(ptr) = release + change the direction of the unique_ptr to the new ptr
+		
+		//balance
+		void balance();
 
+		//RAII
 		bst(PO K): PO{K} {};      //ctor for the PO
 		bst() noexcept = default; //the default generated ctor and desctor are
 		~bst() noexcept = default; //fine because we do not have row pointers   //RAII
@@ -229,7 +233,9 @@ class bst{
 	};
 
 	template <typename O>
-	std::pair<iterator, bool> private_insert(O&& x );	
+	std::pair<iterator, bool> private_insert(O&& x );  //larger function ==> defined outside the class	
+
+	void recursive_insertion(std::vector<pair_type>);
 
 	//Put-to operator
 	friend
@@ -342,6 +348,33 @@ bst<key_type, value_type, PO>::private_insert(O&& x ){            // i.e bst<key
   	}
 }
 
+
+template <typename key_type, typename value_type, typename PO> //if we write PO=std::less<key_type> ==> error:default value for x
+void bst<key_type, value_type, PO>::recursive_insertion(std::vector<pair_type>){
+	std::vector<pair_type> pairs;
+	std::size_t middle = 0.5 * pairs.size(); 
+}
+
+template <typename key_type, typename value_type, typename PO> //if we write PO=std::less<key_type> ==> error:default value for x
+void bst<key_type, value_type, PO>::balance(){
+	std::vector<pair_type> pairs;
+
+	auto begin_pair = begin();
+	auto end_pair  = end();
+
+	while(!root){
+		break;
+	};
+
+	for (iterator it = begin_pair; it != end_pair; ++it){
+		pairs.push_back(begin_pair);   //remember here when he discussed in the vector excersise session that push_back
+	}                                      //takes only one argument 
+
+	clear();        //Remember it!!
+
+	std::sort(begin_pair,end_pair);
+	recursive_insertion(pairs);
+}
 
 int main(){
 
@@ -494,7 +527,7 @@ int main(){
 	tree2.clear();
 	tree.clear();
 
-//	std::cout << "after tree.clear() " << tree2 << std::endl; //segmentation fault
+//	std::cout << "after tree.clear() " << tree2 << std::endl; //segmentation fault ==> It is ok
 
 /*
 	for (auto it_tree2  = tree2.begin(); it_tree2 != tree2.end(); ++it_tree2) {  //complains about !=
@@ -502,6 +535,8 @@ int main(){
 		std::cout << " ( " << it_tree2->first << "," << it_tree2->second << " )" << std::endl;
 	}; 
 */
+
+
 	return 0;
 
 
